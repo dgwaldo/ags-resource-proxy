@@ -19,7 +19,7 @@ namespace Ags.ResourceProxy.Core.Tests {
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException), "hostingEnvironment")]
 		public void ProxyConfigService_WhenCreatedWithout_HostingEnv_ShouldThrow() {
-			var sut = new ProxyConfigService(null);
+			var sut = new ProxyConfigService(null, "proxy.config.json");
 		}
 
 		[TestMethod]
