@@ -1,0 +1,23 @@
+{
+	// Allowed referrers must contain an exact URL match.
+	"allowedReferrers": [ "*" ],
+	"useAppPoolIdentity": false,
+	"tokenCacheMinutes": 29,
+	"serverUrls": [
+		{
+			"url": "https://arcgisserver.yourdomain.com/webapdater/",
+			"domain": "yourdomain",
+			"username": "username",
+			"password": "password"
+		},
+		{
+			"url": "https://arcgisportal.com/webadapter/",
+			"domain": "yourdomain",
+			"username": "username",
+			"password": "password",
+			"clientId": "clientid",
+			"clientSecret": "clientsecret",
+			"oauth2Endpoint": "https://arcgisserver.com/webadapter/sharing/oauth2/"
+		}
+	]
+}

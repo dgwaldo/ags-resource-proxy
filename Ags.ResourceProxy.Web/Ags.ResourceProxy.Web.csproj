@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="proxy.config.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="proxy.config.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ags.ResourceProxy.Core\Ags.ResourceProxy.Core.csproj" />
+  </ItemGroup>
+
+</Project>
