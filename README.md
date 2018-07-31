@@ -1,5 +1,3 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/r8sx7x8ox6amw7bm?svg=true)](https://ci.appveyor.com/project/dgwaldo/ags-resource-proxy)
-
 # AGS (ArcGIS Server) .Net Core Resource-Proxy
 ArcGIS Server resource proxy for .Net Core. This proxy is like the https://github.com/Esri/resource-proxy but has been updated to work with .Net Core.
 
@@ -18,8 +16,11 @@ ArcGIS Server resource proxy for .Net Core. This proxy is like the https://githu
  - This proxy does not do any logging.
 
 ## Instructions:
+Install the package off Nuget. PM> Install-Package Ags.ResourceProxy.Core -Version 1.0.0
 
 Place the proxy config file into the root of your application directory, (location is configurable).
+
+Example wireup can be seen in the web project.
 
     // Proxy Configuration (proxy.config.json)
     {
@@ -53,7 +54,6 @@ Place the proxy config file into the root of your application directory, (locati
 
 In your .Net Core ASP project locate the startup.cs file. In the ConfigureServices method add the following code.
 
-    
         // This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services) {
 			... Copy below this line ...
