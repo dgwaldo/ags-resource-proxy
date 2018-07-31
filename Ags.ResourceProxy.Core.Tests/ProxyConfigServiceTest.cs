@@ -149,7 +149,7 @@ namespace Ags.ResourceProxy.Core.Tests {
 		}
 
 		private ProxyConfigService GetSut(ProxyConfig config) {
-			var mockProxyConfigService = new Mock<ProxyConfigService>(_mockHostingEnv.Object);
+			var mockProxyConfigService = new Mock<ProxyConfigService>(_mockHostingEnv.Object, "mock.path.json");
 			mockProxyConfigService.SetupGet(x => x.Config).Returns(config);
 			return mockProxyConfigService.Object;
 		}
