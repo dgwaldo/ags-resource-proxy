@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/r8sx7x8ox6amw7bm?svg=true)](https://ci.appveyor.com/project/dgwaldo/ags-resource-proxy)
+
 # AGS (ArcGIS Server) .Net Core Resource-Proxy
 ArcGIS Server resource proxy for .Net Core. This proxy is like the https://github.com/Esri/resource-proxy but has been updated to work with .Net Core.
 
