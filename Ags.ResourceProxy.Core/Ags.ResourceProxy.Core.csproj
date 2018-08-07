@@ -9,9 +9,9 @@
     <RepositoryUrl>https://github.com/dgwaldo/ags-resource-proxy</RepositoryUrl>
     <PackageTags>ArcGIS Server Proxy, ArcGIS Resource Proxy</PackageTags>
     <Description>.Net Core implementatino of a resoure proxy for ArcGIS Server.</Description>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

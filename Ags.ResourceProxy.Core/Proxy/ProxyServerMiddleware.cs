@@ -44,6 +44,8 @@ namespace Ags.ResourceProxy.Core {
 				CreateErrorResponse(context.Response, $"Referrer {_proxyReferrer} is not allowed.", HttpStatusCode.BadRequest);
 				return;
 			}
+			// Allows request body to be read multiple times, and buffers.
+			context.Request.EnableBuffering();
 
 			var proxiedUrl = context.Request.QueryString.ToString().TrimStart('?');
 
