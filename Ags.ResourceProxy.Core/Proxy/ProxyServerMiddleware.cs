@@ -17,7 +17,6 @@ namespace Ags.ResourceProxy.Core {
 		private readonly IProxyService _proxyService;
 		private readonly RequestDelegate _next;
 		private string _proxyReferrer;
-		private const int StreamCopyBufferSize = 81920;
 
 		public ProxyServerMiddleware(
 			RequestDelegate next,
@@ -142,7 +141,7 @@ namespace Ags.ResourceProxy.Core {
 			response.Headers.Remove("transfer-encoding");
 
 			using (var responseStream = await responseMessage.Content.ReadAsStreamAsync()) {
-				await responseStream.CopyToAsync(response.Body, StreamCopyBufferSize, context.RequestAborted);
+				await responseStream.CopyToAsync(response.Body, context.RequestAborted);
 			}
 		}
 
