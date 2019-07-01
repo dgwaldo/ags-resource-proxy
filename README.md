@@ -90,7 +90,7 @@ Next add the following to the Configure method.
 			//&& context.User.Identity.IsAuthenticated; // Add this back in to keep unauthenticated users from utilzing the proxy.
 		},
 			builder =>
-				builder.UseEsriProxyServer(
+				builder.UseAgsProxyServer(
 				app.ApplicationServices.GetService<IProxyConfigService>(),
 				app.ApplicationServices.GetService<IProxyService>(),
 				app.ApplicationServices.GetService<IMemoryCache>())
