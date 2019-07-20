@@ -25,6 +25,11 @@ namespace Ags.ResourceProxy.Core {
 
 		public string ConfigPath { get; }
 
+		public ProxyConfigService(ProxyConfig config)
+		{
+			_config = config ?? throw new ArgumentException(nameof(config));
+		}
+
 		public ProxyConfigService(IHostingEnvironment hostingEnvironment, string configPath) {
 			_hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));
 			ConfigPath = configPath;
@@ -45,13 +50,16 @@ namespace Ags.ResourceProxy.Core {
 		}
 
 		public List<KeyValuePair<string, string>> GetOAuth2FormData(ServerUrl su, string proxyReferrer) {
-			return new List<KeyValuePair<string, string>> {
+			var pairs = new List<KeyValuePair<string, string>> {
 				new KeyValuePair<string, string>("client_id", su.ClientId),
 				new KeyValuePair<string, string>("client_secret", su.ClientSecret),
 				new KeyValuePair<string, string>("grant_type", "client_credentials"),
-				new KeyValuePair<string, string>("redirect_uri", proxyReferrer),
-				new KeyValuePair<string, string>("f", "json"),
 			};
+			if (Config.TokenCacheMinutes > 0)
+			{
+				pairs.Add(new KeyValuePair<string, string>("expiration", Config.TokenCacheMinutes.ToString()));
+			}
+			return pairs;
 		}
 
 		public List<KeyValuePair<string, string>> GetPortalExchangeTokenFormData(ServerUrl su, string proxyReferrer, string portalCode) {

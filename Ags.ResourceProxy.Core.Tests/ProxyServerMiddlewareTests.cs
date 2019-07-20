@@ -86,7 +86,7 @@ namespace Ags.ResourceProxy.Core.Tests {
 			//Arrange
 			_mockProxyConfigService.Setup(x => x.GetProxyServerUrlConfig(It.IsAny<string>())).Returns(() => null);
 			_mockProxyConfigService.Setup(x => x.IsAllowedReferrer(It.IsAny<string>())).Returns(true);
-			_mockEvilEsriProxyService.Setup(x => x.ForwardRequestToServer(It.IsAny<HttpRequest>(), It.Is<string>(y => y == "http://www.google.com"), It.IsAny<string>()))
+			_mockEvilEsriProxyService.Setup(x => x.ForwardRequestToServer(It.IsAny<HttpRequest>(), It.Is<string>(y => y == "http://www.google.com"), It.IsAny<string>(), It.IsAny<string>()))
 				.ReturnsAsync(new HttpResponseMessage { Content = new StringContent("Proxied Response - Token Auth") });
 
 			var sut = GetMiddleware();
@@ -111,10 +111,13 @@ namespace Ags.ResourceProxy.Core.Tests {
 				});
 			_mockProxyConfigService.Setup(x => x.IsAllowedReferrer(It.IsAny<string>())).Returns(true);
 			_mockProxyConfigService.SetupGet(x => x.Config.TokenCacheMinutes).Returns(30);
+			_mockProxyConfigService.Setup(x => x.GetOAuth2FormData(It.IsAny<ServerUrl>(), It.IsAny<string>()))
+				.Returns(new List<KeyValuePair<string, string>>());
 
 			_mockEvilEsriProxyService.Setup(x => x.ForwardRequestToServer(
 				It.IsAny<HttpRequest>(),
-				It.Is<string>(y => y == "http://www.arcgisserver.com/aswa/rest/service1?token=asd34rf"),
+				It.Is<string>(y => y == "http://www.arcgisserver.com/aswa/rest/service1"),
+				It.IsAny<string>(),
 				It.IsAny<string>()))
 				.ReturnsAsync(new HttpResponseMessage { Content = new StringContent("Proxied Response") });
 
@@ -123,16 +126,10 @@ namespace Ags.ResourceProxy.Core.Tests {
 			_mockMemoryCache.Setup(m => m.CreateEntry(It.IsAny<object>())).Returns(Mock.Of<ICacheEntry>());
 
 			_mockEvilEsriProxyService.Setup(x => x.RequestTokenJson(
-				It.Is<string>(y => y == "https://arcgisserver.com/aswa/oauth2/token"),
+				It.IsAny<string>(),
 				It.IsAny<List<KeyValuePair<string, string>>>(),
 				It.IsAny<string>()))
-				.ReturnsAsync(@"{""access_token"" : ""asd35fr""}");
-
-			_mockEvilEsriProxyService.Setup(x => x.RequestTokenJson(
-				It.Is<string>(y => y == "https://arcgisserver.com/aswa/generateToken"),
-				It.IsAny<List<KeyValuePair<string, string>>>(),
-				It.IsAny<string>()))
-				.ReturnsAsync(@"{""token"" : ""asd34rf"", ""expires"": ""9999999"" }");
+				.ReturnsAsync(@"{""access_token"" : ""asd34rf"", ""expires_in"": ""9999999"" }");
 
 			var sut = GetMiddleware();
 
@@ -142,7 +139,6 @@ namespace Ags.ResourceProxy.Core.Tests {
 			//Assert
 			_mockMemoryCache.Verify(x => x.TryGetValue(It.Is<string>(y => y == "token_for_http://www.arcgisserver.com/aswa/rest/"), out str));
 			_mockProxyConfigService.Verify(x => x.GetOAuth2FormData(It.IsAny<ServerUrl>(), It.IsAny<string>()));
-			_mockProxyConfigService.Verify(x => x.GetPortalExchangeTokenFormData(It.IsAny<ServerUrl>(), It.IsAny<string>(), It.IsAny<string>()));
 			_mockEvilEsriProxyService.Verify(x => x.RequestTokenJson(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>(), It.IsAny<string>()));
 		}
 
@@ -159,11 +155,12 @@ namespace Ags.ResourceProxy.Core.Tests {
 			_mockProxyConfigService.Setup(x => x.IsAllowedReferrer(It.IsAny<string>())).Returns(true);
 
 			_mockEvilEsriProxyService.Setup(x => x.ForwardRequestToServer(It.IsAny<HttpRequest>(),
-				It.Is<string>(y => y == "https://arcgisserver.com/aswa/rest?token=asd34rf"),
+				It.Is<string>(y => y == "https://arcgisserver.com/aswa/rest"),
+				It.IsAny<string>(),
 				It.IsAny<string>()))
 				.ReturnsAsync(new HttpResponseMessage { Content = new StringContent("Proxied Response - App Auth") });
 
-			object str = @"{""token"" : ""asd34rf"", ""expires"": ""9999999"" }";
+			object str = @"{""access_token"" : ""asd34rf"", ""expires_in"": ""9999999"" }";
 			_mockMemoryCache.Setup(x => x.TryGetValue(It.IsAny<string>(), out str)).Returns(true);
 
 			var context = GetDefaultContext("?https://arcgisserver.com/aswa/rest");
@@ -193,7 +190,8 @@ namespace Ags.ResourceProxy.Core.Tests {
 			_mockEvilEsriProxyService.Setup(x => x.ForwardRequestToServer(
 				It.IsAny<HttpRequest>(),
 				It.Is<string>(y => y == proxiedUrl), // Url being proxied
-				It.Is<string>(z => z == "http://www.arcgisserver.com/") // IHttpFactory - Named Client
+				It.Is<string>(z => z == "http://www.arcgisserver.com/"), // IHttpFactory - Named Client
+				It.IsAny<string>() // token, if using OAuth
 				)).ReturnsAsync(new HttpResponseMessage { Content = new StringContent("Proxied Response - User Auth") })
 				.Verifiable();
 

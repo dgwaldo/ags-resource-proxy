@@ -11,6 +11,8 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Ags.ResourceProxy.Core {
 
 	public class ProxyServerMiddleware {
+        private const string JsonExpirationKey = "expires_in";
+        private const string JsonTokenKey = "access_token";
 
 		private readonly IMemoryCache _cache;
 		private readonly IProxyConfigService _proxyConfigService;
@@ -61,13 +63,10 @@ namespace Ags.ResourceProxy.Core {
 
 				if (isAppLogin) {
 					var serverToken = await CacheTryGetServerToken(serverUrlConfig, httpClientName);
-					var delimiter = String.IsNullOrEmpty(new Uri(proxiedUrl).Query) ? "?" : "&";
-					var tokenizedUrl = $"{proxiedUrl}{delimiter}token={serverToken}";
-					response = await _proxyService.ForwardRequestToServer(context.Request, tokenizedUrl, httpClientName);
+					response = await _proxyService.ForwardRequestToServer(context.Request, proxiedUrl, httpClientName, serverToken);
 				} else if (isUserLogin) {
 					response = await _proxyService.ForwardRequestToServer(context.Request, proxiedUrl, httpClientName);
 				}
-
 			} else { // No matching url to proxy, bypass and proxy the request.
 				response = await _proxyService.ForwardRequestToServer(context.Request, proxiedUrl, "");
 			}
@@ -83,44 +82,33 @@ namespace Ags.ResourceProxy.Core {
 
 		private async Task<string> CacheTryGetServerToken(ServerUrl su, string clientName, bool killCache = false) {
 
-			var tokenCacheKey = "token_for_" + su.Url;
+			var tokenCacheKey = $"token_for_{su.Url}";
+			JObject o;
 
 			if (!_cache.TryGetValue(tokenCacheKey, out string serverTokenJson) || killCache) {
 				// Key not in cache, so get token.
-				var appToken = await GetAppLoginToken(su, clientName);
-
-				var tokenUri = $"{su.Oauth2Endpoint.ToLower().Substring(0, su.Oauth2Endpoint.IndexOf("/oauth2/", StringComparison.OrdinalIgnoreCase))}/generateToken";
-
-				var formData = _proxyConfigService.GetPortalExchangeTokenFormData(su, _proxyReferrer, appToken);
-
-				serverTokenJson = await _proxyService.RequestTokenJson(tokenUri, formData, clientName);
-
-				_cache.Set(tokenCacheKey, serverTokenJson, TimeSpan.FromMinutes(_proxyConfigService.Config.TokenCacheMinutes));
+				serverTokenJson = await GetAppToken(su, clientName);
+				o = JObject.Parse(serverTokenJson);
+				// Set expiration based on value returned with access token
+				_cache.Set(tokenCacheKey, serverTokenJson, TimeSpan.FromSeconds(Convert.ToDouble(o[JsonExpirationKey])));
+			} else
+			{
+				o = JObject.Parse(serverTokenJson);
 			}
 
-			JObject o = JObject.Parse(serverTokenJson);
-			return (string)o["token"];
+			return (string)o[JsonTokenKey];
 		}
 
-		private async Task<string> GetAppLoginToken(ServerUrl su, string clientName) {
+		private async Task<string> GetAppToken(ServerUrl su, string clientName) {
 
-			if (su.Oauth2Endpoint == null) {
+			if (string.IsNullOrEmpty(su.Oauth2Endpoint)) {
 				throw new ArgumentNullException("Oauth2Endpoint");
 			}
 
-			var oAuth2Endpoint = su.Oauth2Endpoint;
-			if (oAuth2Endpoint[oAuth2Endpoint.Length - 1] != '/') {
-				oAuth2Endpoint += "/";
-			}
-
-			var tokenUri = $"{oAuth2Endpoint}token";
-
 			var formData = _proxyConfigService.GetOAuth2FormData(su, _proxyReferrer);
 
-			var tokenJson = await _proxyService.RequestTokenJson(tokenUri, formData, clientName);
-
-			JObject o = JObject.Parse(tokenJson);
-			return (string)o["access_token"];
+			var tokenJson = await _proxyService.RequestTokenJson(su.Oauth2Endpoint, formData, clientName);
+			return tokenJson;
 		}
 
 		private async Task CopyProxyHttpResponse(HttpContext context, HttpResponseMessage responseMessage) {

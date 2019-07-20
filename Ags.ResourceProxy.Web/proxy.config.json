@@ -3,7 +3,7 @@
 	"allowedReferrers": [ "*" ],
 	"useAppPoolIdentity": false,
 	"tokenCacheMinutes": 29,
-	"serverUrls": [
+  "serverUrls": [
 		{
 			"url": "https://arcgisserver.yourdomain.com/webapdater/",
 			"domain": "yourdomain",
@@ -11,13 +11,10 @@
 			"password": "password"
 		},
 		{
-			"url": "https://arcgisportal.com/webadapter/",
-			"domain": "yourdomain",
-			"username": "username",
-			"password": "password",
+			"url": "arcgis.com",
 			"clientId": "clientid",
 			"clientSecret": "clientsecret",
-			"oauth2Endpoint": "https://arcgisserver.com/webadapter/sharing/oauth2/"
+			"oauth2Endpoint": "https://www.arcgis.com/sharing/rest/oauth2/token"
 		}
 	]
 }

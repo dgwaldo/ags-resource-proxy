@@ -68,6 +68,7 @@ namespace Ags.ResourceProxy.Core.Tests {
 		public void GetOAuth2FormData_Should_Create_Required_KeyVals_For_Server_Post() {
 			//Arrange
 			var sut = GetSut(new ProxyConfig {
+				TokenCacheMinutes = 5,
 				ServerUrls = new[] { new ServerUrl {
 					Url = "http://www.arcgisserver.com/aswa/rest/",
 					ClientId = "ClientA",
@@ -82,8 +83,7 @@ namespace Ags.ResourceProxy.Core.Tests {
 			Assert.AreEqual(sut.Config.ServerUrls[0].ClientId, dict["client_id"]);
 			Assert.AreEqual(sut.Config.ServerUrls[0].ClientSecret, dict["client_secret"]);
 			Assert.AreEqual("client_credentials", dict["grant_type"]);
-			Assert.AreEqual(proxyReferrer, dict["redirect_uri"]);
-			Assert.AreEqual("json", dict["f"]);
+			Assert.AreEqual(sut.Config.TokenCacheMinutes, Convert.ToDouble(dict["expiration"]));
 		}
 
 		[TestMethod]
