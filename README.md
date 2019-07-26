@@ -2,6 +2,7 @@
 
 # AGS (ArcGIS Server) .Net Core Resource-Proxy
 ArcGIS Server resource proxy for .Net Core. This proxy is like the https://github.com/Esri/resource-proxy but has been updated to work with .Net Core.
+The latest version supports changes to the OAuth2 endpoint introduced in v10.0 of the ArcGIS REST API.
 
 ## Features:
 - Accessing cross domain resources
@@ -44,13 +45,10 @@ Example wireup can be seen in the web project.
 		// Example using using client and client secret to get OAuth tokens.
 		// Note: IWA credentials can also be passed for environments where IT has the token endpoint behind IWA.
 		{
-			"url": "https://arcgisportal.com/webadapter/",
-			"domain": "yourdomain",
-			"username": "username",
-			"password": "password",
+			"url": "arcgis.com",
 			"clientId": "clientid",
 			"clientSecret": "clientsecret",
-			"oauth2Endpoint": "https://arcgisserver.com/webadapter/sharing/oauth2/"
+			"oauth2Endpoint": "https://www.arcgis.com/sharing/rest/oauth2/token"
 		}
 	]}
 
@@ -80,6 +78,8 @@ In your .Net Core ASP project locate the startup.cs file. In the ConfigureServic
 		}
 
 Note: The location of the config file can be set when the proxy config service is injected. Example: ("/MyFolder/proxy.config.json")
+
+Note: If you consolidate your various configurations into a single file, you may instead pass a configuration object to the ProxyConfigService constructor.
 
 Next add the following to the Configure method.
 
