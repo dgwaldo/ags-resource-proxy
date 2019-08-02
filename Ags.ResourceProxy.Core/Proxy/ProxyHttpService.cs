@@ -13,8 +13,6 @@ namespace Ags.ResourceProxy.Core {
 		private const string JsonContentType = "application/json";
 		private const string FormContentType = "application/x-www-form-urlencoded";
 		private const string OAuthTokenKey = "token";
-		private const string OAuthFormatKey = "f";
-		private const string OAuthFormatValue = "json";
 
 		private readonly IHttpClientFactory _httpClientFactory;
 
@@ -74,13 +72,12 @@ namespace Ags.ResourceProxy.Core {
 				if (isJson)
 				{
 					JObject bodyContent = JObject.Parse(body);
-					bodyContent[OAuthFormatKey] = OAuthFormatValue;
 					bodyContent[OAuthTokenKey] = token;
 					body = bodyContent.ToString();
 				}
 				else
 				{
-					body = string.Concat(body, !string.IsNullOrEmpty(body) ? "&" : string.Empty, $"{OAuthFormatKey}={OAuthFormatValue}&{OAuthTokenKey}={token}");
+					body = string.Concat(body, !string.IsNullOrEmpty(body) ? "&" : string.Empty, $"{OAuthTokenKey}={token}");
 				}
 			}
 
