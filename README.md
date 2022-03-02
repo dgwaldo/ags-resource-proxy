@@ -74,7 +74,7 @@ In your .Net Core ASP project locate the startup.cs file. In the ConfigureServic
 					});
 			});
 			... Copy above this line ...
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+			services.AddMvc(options => options.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 		}
 
 Note: The location of the config file can be set when the proxy config service is injected. Example: ("/MyFolder/proxy.config.json")
@@ -86,7 +86,7 @@ Next add the following to the Configure method.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
 		... Copy below this line ... 
 		app.UseWhen(context => {
-			return context.Request.Path.Value.ToLower().StartsWith(@"/proxy/proxy.ashx", StringComparison.OrdinalIgnoreCase);
+			return context.Request.Path.Value.ToLower().StartsWith(@"/proxy.ashx", StringComparison.OrdinalIgnoreCase);
 			//&& context.User.Identity.IsAuthenticated; // Add this back in to keep unauthenticated users from utilzing the proxy.
 		},
 			builder =>
