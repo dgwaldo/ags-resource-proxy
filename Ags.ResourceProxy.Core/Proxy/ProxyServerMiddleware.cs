@@ -35,6 +35,12 @@ namespace Ags.ResourceProxy.Core {
 		public async Task Invoke(HttpContext context) {
 			var endRequest = false;
 
+            if (!context.Request.QueryString.HasValue)
+            {
+                await context.Response.WriteAsync(CreateEmptyExceptionResponse());
+                return;
+            }
+
 			if (context.Request.QueryString.HasValue && context.Request.QueryString.ToString().ToLower() == "?ping") {
 				await context.Response.WriteAsync(CreatePingResponse());
 				return;
@@ -150,6 +156,19 @@ namespace Ags.ResourceProxy.Core {
 			};
 			return JsonConvert.SerializeObject(pingResponse);
 		}
+
+        private string CreateEmptyExceptionResponse()
+        {
+			var errorResponse = new
+            {
+                error = new 
+                {
+					code = HttpStatusCode.BadRequest,
+                    message = "This proxy does not support empty parameters."
+				}
+            };
+            return JsonConvert.SerializeObject(errorResponse);
+        }
 
 	}
 }

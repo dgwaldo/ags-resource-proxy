@@ -1,17 +1,17 @@
-using System;
-using System.Linq;
-using System.Net.Http;
 using Ags.ResourceProxy.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+using System.Net.Http;
 
-namespace Ags.ResourceProxy.Web {
-	public class Startup {
+namespace Ags.ResourceProxy.Web
+{
+    public class Startup {
 		public Startup(IConfiguration configuration) {
 			Configuration = configuration;
 		}
@@ -36,9 +36,8 @@ namespace Ags.ResourceProxy.Web {
 						};
 					});
 			});
-
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-		}
+            services.AddMvc(options => options.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Latest);
+        }
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
@@ -54,7 +53,7 @@ namespace Ags.ResourceProxy.Web {
 			app.UseCookiePolicy();
 
 			app.UseWhen(context => {
-				return context.Request.Path.Value.ToLower().StartsWith(@"/proxy/proxy.ashx", StringComparison.OrdinalIgnoreCase);
+				return context.Request.Path.Value.ToLower().StartsWith(@"/proxy.ashx", StringComparison.OrdinalIgnoreCase);
 				//&& context.User.Identity.IsAuthenticated; // Add this back in to keep unauthenticated users from utilzing the proxy.
 			},
 				builder =>
