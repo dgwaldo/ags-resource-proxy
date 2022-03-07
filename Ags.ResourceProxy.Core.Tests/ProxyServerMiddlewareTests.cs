@@ -77,7 +77,7 @@ namespace Ags.ResourceProxy.Core.Tests {
 			//Act
 			await sut.Invoke(context);
 			//Assert
-			Assert.AreEqual(@"{""message"":""Referrer www.nottest.com is not allowed."",""status"":400}",
+			Assert.AreEqual(@"{""error"":{""code"":400,""message"":""This proxy does not support empty parameters.""}}",
 				await GetResponseContent(context.Response));
 		}
 
