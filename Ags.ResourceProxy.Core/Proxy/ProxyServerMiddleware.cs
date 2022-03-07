@@ -136,8 +136,16 @@ namespace Ags.ResourceProxy.Core {
 			// Removes the header so it doesn't expect a chunked response.
 			response.Headers.Remove("transfer-encoding");
 
-			using (var responseStream = await responseMessage.Content.ReadAsStreamAsync()) {
-				await responseStream.CopyToAsync(response.Body, context.RequestAborted);
+			try
+			{
+				using (var responseStream = await responseMessage.Content.ReadAsStreamAsync())
+				{
+					await responseStream.CopyToAsync(response.Body, context.RequestAborted);
+				}
+			}
+			catch (TaskCanceledException)
+			{
+				//no-op: task cancelations are incredibly common and flood app-level logging
 			}
 		}
 
